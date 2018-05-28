@@ -3,7 +3,7 @@
  */
 package com.gcit.lmsspringboot.dao;
 
-import java.math.BigDecimal;
+//import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 /**
  * @author iratusmachina
@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -27,7 +29,9 @@ import com.gcit.lmsspringboot.entity.Book;
  */
 @Component
 public class AuthorDAO extends BaseDAO<Author> implements ResultSetExtractor<List<Author>>{
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(AuthorDAO.class);
+	
 	public void addAuthor(Author author) throws ClassNotFoundException, SQLException{
 		mySqlTemplate.update("insert into tbl_author(authorName) values(?)", author.getAuthorName());
 	}
@@ -42,8 +46,10 @@ public class AuthorDAO extends BaseDAO<Author> implements ResultSetExtractor<Lis
 			return ps;
 		}, keyHolder);
 
-		BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
-		return id.intValue();
+		//BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
+		//return id.intValue();
+		logger.info("Id is {}", keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
 	}
 	
 	public void deleteAuthor(Author author) throws ClassNotFoundException, SQLException{

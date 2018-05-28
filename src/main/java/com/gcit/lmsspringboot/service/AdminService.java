@@ -134,10 +134,25 @@ public class AdminService {
 		return author;
 	}
 	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/authors/{authorId}", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public Author getAuthor(@PathVariable int authorId) throws SQLException{
+		Author author=null;
+		try {
+			List<Author> authors = authorDao.getAllAuthors();
+			author = this.getAuthor(authors, authorId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return author;
+	}
+	
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@RequestMapping(value = "/admin/authors/{authorId}", 
 			method = RequestMethod.DELETE)
-	public void deleteAuthor(int authorId) throws SQLException {
+	public void deleteAuthor(@PathVariable int authorId) throws SQLException {
 		try {
 			Author author = new Author();
 			author.setAuthorId(authorId);
