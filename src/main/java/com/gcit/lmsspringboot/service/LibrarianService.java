@@ -66,10 +66,10 @@ public class LibrarianService {
 		try {
 			List<LibraryBranch> branches = lbdao.getAllBranches();
 			LibraryBranch libraryBranch = this.getBranchByID(branches, branchId);
-			if (branchName.trim().length() != 0) {
+			if (branchName != null && branchName.trim().length() != 0) {
 				lbdao.updateBranchName(libraryBranch, branchName);
 			}
-			if (branchAddress.trim().length() != 0) {
+			if (branchAddress != null && branchAddress.trim().length() != 0) {
 				lbdao.updateBranchName(libraryBranch, branchAddress);
 			}
 			branches = lbdao.getAllBranches();
