@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,8 @@ import com.gcit.lmsspringboot.entity.Borrower;
 @Component
 public class BorrowerDAO extends BaseDAO<Borrower> implements ResultSetExtractor<List<Borrower>>{
 
+	private static final Logger logger = LoggerFactory.getLogger(PublisherDAO.class);
+	
 	public void addBorrower(Borrower borrower) throws ClassNotFoundException, SQLException{
 		mySqlTemplate.update("insert into tbl_borrower(name, address, phone) values(?, ?, ?)", 
 				borrower.getName(), 
@@ -42,8 +46,8 @@ public class BorrowerDAO extends BaseDAO<Borrower> implements ResultSetExtractor
 			return ps;
 		}, keyHolder);
 
-		BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
-		return id.intValue();
+		logger.info("Id is {}", keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
 	}
 	
 	public void updateBorrowerName(Borrower borrower) throws ClassNotFoundException, SQLException {

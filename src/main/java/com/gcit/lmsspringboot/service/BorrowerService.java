@@ -68,7 +68,7 @@ public class BorrowerService {
 	@Transactional
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/borrowers/{cardNo}/return", 
-		method = RequestMethod.POST, 
+		method = RequestMethod.PATCH, 
 		consumes = "application/json")
 	public BookLoan returnBook(@RequestParam int branchId, 
 			@RequestParam int bookId, @PathVariable int cardNo) 
@@ -151,28 +151,20 @@ public class BorrowerService {
 		return borrowers;
 	}
 	
-	@RequestMapping(value = "/borrowers/{cardNo}/name", 
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/borrowers/{cardNo}", 
 			method = RequestMethod.GET, 
 			produces = "application/json")
-	public ResponseEntity<?> getBorrowerName(@PathVariable int cardNo) 
+	public Borrower getBorrower(@PathVariable int cardNo) 
 			throws SQLException{
-		String borrowerName = "";
+		Borrower borrower = null;
 		try {
 			List<Borrower> borrowers = bdao.getAllBorrowers();
-			if (borrowers != null) {
-				Borrower borrower = this.getBorrowerById(borrowers, cardNo);
-				if (borrower != null) {
-					borrowerName = borrower.getName();
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-				}
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-			}
+			borrower = this.getBorrowerById(borrowers, cardNo);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return new ResponseEntity<>(borrowerName, HttpStatus.OK);
+		return borrower;
 	}
 	
 	@Transactional
@@ -183,21 +175,21 @@ public class BorrowerService {
 			produces = "application/json")
 	public Borrower editBorrower(@PathVariable int cardNo, 
 			@RequestParam (value="name", required=false) String name, 
-			@RequestParam (value="name", required=false) String phone, 
-			@RequestParam (value="name", required=false) String address) throws SQLException{
+			@RequestParam (value="phone", required=false) String phone, 
+			@RequestParam (value="address", required=false) String address) throws SQLException{
 		Borrower borrower = null;
 		try {
 			List<Borrower> borrowers = bdao.getAllBorrowers();
 			borrower = this.getBorrowerById(borrowers, cardNo);
-			if (name.trim().length() != 0) {
+			if (name != null && name.trim().length() != 0) {
 				borrower.setName(name);
 				bdao.updateBorrowerName(borrower);
 			}
-			if (phone.trim().length() != 0) {
+			if (phone != null && phone.trim().length() != 0) {
 				borrower.setPhone(phone);
 				bdao.updateBorrowerPhone(borrower);
 			}
-			if (address.trim().length() != 0) {
+			if (address != null && address.trim().length() != 0) {
 				borrower.setAddress(address);
 				bdao.updateBorrowerAddress(borrower);
 			}

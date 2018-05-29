@@ -25,19 +25,14 @@ public class BookLoanDAO extends BaseDAO<BookLoan> implements ResultSetExtractor
 	
 	public void addLoan(BookLoan bookLoan) throws ClassNotFoundException, SQLException{
 		// TODO Auto-generated method stub
-		mySqlTemplate.update("insert tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate, dateIn) values(?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), NULL)", 
-				new Object[] { bookLoan.getBookId() }, 
-				new Object[] { bookLoan.getBranchId() }, 
-				new Object[] { bookLoan.getCardNo() });
+		mySqlTemplate.update("insert into tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate, dateIn) values(?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), NULL)", 
+				bookLoan.getBookId(), bookLoan.getBranchId(), bookLoan.getCardNo());
 	}
 	
 	public void returnLoan(BookLoan bookLoan) throws ClassNotFoundException, SQLException{
 		// TODO Auto-generated method stub
 		mySqlTemplate.update("update tbl_book_loans set dateIn = NOW() where bookId = ? and branchId = ? and cardNo = ? and dateOut = ? and dateIn IS NULL", 
-				new Object[] { bookLoan.getBookId() }, 
-				new Object[] { bookLoan.getBranchId() }, 
-				new Object[] { bookLoan.getCardNo()} , 
-				new Object[] { bookLoan.getDateOut() });
+				bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(),bookLoan.getDateOut());
 	}
 	
 	// Change this
@@ -54,11 +49,8 @@ public class BookLoanDAO extends BaseDAO<BookLoan> implements ResultSetExtractor
 	public void changeDueDate(BookLoan bookLoan) throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
 		mySqlTemplate.update("update tbl_book_loans set dueDate = ? where bookId = ? and branchId = ? and cardNo = ? and dateOut = ?", 
-				new Object[] { bookLoan.getDueDate()}, 
-				new Object[] { bookLoan.getBookId() },
-				new Object[] { bookLoan.getBranchId() }, 
-				new Object[] { bookLoan.getCardNo() },
-				new Object[] { bookLoan.getDateOut() });
+				bookLoan.getDueDate(), bookLoan.getBookId(), bookLoan.getBranchId(), 
+				bookLoan.getCardNo(), bookLoan.getDateOut());
 	}
 	
 	private LocalDateTime getTimeFromTimeStamp(Timestamp t) {

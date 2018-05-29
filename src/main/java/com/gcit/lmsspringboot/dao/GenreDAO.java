@@ -3,7 +3,6 @@
  */
 package com.gcit.lmsspringboot.dao;
 
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
