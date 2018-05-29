@@ -2,6 +2,7 @@ package com.gcit.lmsspringboot.service;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +23,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.gcit.lmsspringboot.entity.Genre;
 import com.gcit.lmsspringboot.dao.AuthorDAO;
 import com.gcit.lmsspringboot.dao.BookDAO;
+import com.gcit.lmsspringboot.dao.BookLoanDAO;
 import com.gcit.lmsspringboot.dao.GenreDAO;
 import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.dao.PublisherDAO;
 import com.gcit.lmsspringboot.entity.Author;
 import com.gcit.lmsspringboot.entity.Book;
+import com.gcit.lmsspringboot.entity.BookLoan;
 import com.gcit.lmsspringboot.entity.LibraryBranch;
 import com.gcit.lmsspringboot.entity.Publisher;
 
@@ -47,6 +51,9 @@ public class AdminService {
 	
 	@Autowired
 	GenreDAO genreDao;
+	
+	@Autowired
+	BookLoanDAO bldao;
 	
 
 	private Author getAuthor(List<Author> authors, int authorId) {
@@ -80,6 +87,15 @@ public class AdminService {
 		for (Book book: books) {
 			if (book.getBookId() == bookId) {
 				return book;
+			}
+		}
+		return null;
+	}
+	
+	private BookLoan getBookLoadByDateOut(List<BookLoan> bookLoans, int bookId, int cardNo, LocalDateTime dateOut) {
+		for (BookLoan bookLoan: bookLoans) {
+			if (bookLoan.getBookId() == bookId && bookLoan.getCardNo() == cardNo && bookLoan.getDateOut().isEqual(dateOut)) {
+				return bookLoan;
 			}
 		}
 		return null;
@@ -522,5 +538,35 @@ public class AdminService {
 		} 
 		return genres;
 	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/loans/dueDate", 
+		method = RequestMethod.PATCH,
+		produces = "application/json")
+	public BookLoan changeDueDate(@RequestBody BookLoan loan) throws SQLException{
+		BookLoan bookLoan = null;
+		try {
+			bldao.changeDueDate(loan);
+			List<BookLoan> bookLoans = bldao.getAllBookLoansForBranch(loan.getBranchId());
+			bookLoan = this.getBookLoadByDateOut(bookLoans, loan.getBookId(), loan.getCardNo(), loan.getDateOut());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		return bookLoan;
+	}
 
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/loans/current", 
+		method = RequestMethod.GET, 
+		produces = "application/json")
+	public List<BookLoan> getAllCurrentLoansForBranch(@RequestParam int branchId) throws SQLException{
+		List<BookLoan> bookLoans = null;
+		try {
+			bookLoans = bldao.getCurrentLoansForBranch(branchId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		return bookLoans;
+	}
 }
