@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.gcit.lmsspringboot.dao.AuthorDAO;
+import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.entity.Author;
+import com.gcit.lmsspringboot.entity.LibraryBranch;
 import com.gcit.lmsspringboot.service.AdminService;
 
 @RunWith(SpringRunner.class)
@@ -21,6 +23,12 @@ public class LmsspringbootApplicationTests {
 	@Test
 	public void contextLoads() {
 	}**/
+	
+	@Autowired
+	LibraryBranchDAO libraryBranchDao;
+	
+	@Autowired
+	LibraryBranch branch;
 	
 	@Autowired
 	AdminService adminService;
@@ -35,5 +43,15 @@ public class LmsspringbootApplicationTests {
 		int authorId = authorDAO.addAuthorWithID(author);
 		System.out.println(authorId);
 		assertNotNull(authorId);
+	}
+	
+	@Test
+	public void testLibraryBranchInsert() throws SQLException, ClassNotFoundException{
+		LibraryBranch branch = new LibraryBranch();
+		branch.setBranchName("University Library");
+		branch.setBranchAddress("Cleveland, Ohio");
+		int branchId = libraryBranchDao.addBranchWithID(branch);
+		System.out.println(branchId);
+		assertNotNull(branchId);
 	}
 }

@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -24,12 +26,14 @@ import com.gcit.lmsspringboot.entity.Book;
 @Component
 public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Book>> {
 	
+	private static final Logger logger = LoggerFactory.getLogger(BookDAO.class);
+	
 	public void addBook(Book book) throws ClassNotFoundException, SQLException {
-		mySqlTemplate.update("insert into tbl_book (title) values (?)", new Object[] { book.getTitle() });
+		mySqlTemplate.update("insert into tbl_book (title, pubId) values (?, ?)", new Object[] { book.getTitle(), book.getPublisher().getPublisherId() });
 	}
 	
 	public Integer addBookWithID(Book book) throws ClassNotFoundException, SQLException {
-		String insertSql = "insert into tbl_book (title) values (?)";
+		String insertSql = "insert into tbl_book (title, pubId) values (?, ?)";
 		GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 		String id_column = "bookId";
 		mySqlTemplate.update(con -> {
@@ -39,8 +43,8 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 			return ps;
 		}, keyHolder);
 
-		BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
-		return id.intValue();
+		logger.info("Id is {}", keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
 	}
 
 	public void addBookAuthors(Book book, int authorId) throws ClassNotFoundException, SQLException {
@@ -55,7 +59,7 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 	}
 
 	public void addBookGenres(Book book, int genreId) throws ClassNotFoundException, SQLException {
-		mySqlTemplate.update("insert into tbl_book_genres values (?, ?)", 
+		mySqlTemplate.update("insert into tbl_book_genres(genre_Id, bookId) values (?, ?)", 
 				new Object[] { genreId, book.getBookId() });
 	}
 
@@ -65,7 +69,7 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 	}
 	
 	public void updateBookPublisher(Book book) throws ClassNotFoundException, SQLException {
-		mySqlTemplate.update("update tbl_book set publisher = ? where bookId = ?",
+		mySqlTemplate.update("update tbl_book set pubId = ? where bookId = ?",
 				new Object[] { book.getPublisher().getPublisherId(), book.getBookId() });
 	}
 

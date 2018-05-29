@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,8 @@ import com.gcit.lmsspringboot.entity.Book;
  */
 @Component
 public class GenreDAO extends BaseDAO<Genre> implements ResultSetExtractor<List<Genre>>{
+	
+	private static final Logger logger = LoggerFactory.getLogger(PublisherDAO.class);
 	
 	public void addGenre(Genre genre) throws ClassNotFoundException, SQLException{
 		mySqlTemplate.update("insert into tbl_genre(genre_name) values(?)", 
@@ -39,8 +43,8 @@ public class GenreDAO extends BaseDAO<Genre> implements ResultSetExtractor<List<
 			return ps;
 		}, keyHolder);
 
-		BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
-		return id.intValue();
+		logger.info("Id is {}", keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
 	}
 	
 	public void deleteGenre(Genre genre) throws ClassNotFoundException, SQLException{

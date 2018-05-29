@@ -221,11 +221,11 @@ public class AdminService {
 		try {
 			List<LibraryBranch> branches = lbdao.getAllBranches();
 			LibraryBranch libraryBranch = this.getBranchByID(branches, branchId);
-			if (branchName.trim().length() != 0) {
+			if (branchName != null && branchName.trim().length() != 0) {
 				lbdao.updateBranchName(libraryBranch, branchName);
 			}
-			if (branchAddress.trim().length() != 0) {
-				lbdao.updateBranchName(libraryBranch, branchAddress);
+			if (branchAddress != null && branchAddress.trim().length() != 0) {
+				lbdao.updateBranchAddress(libraryBranch, branchAddress);
 			}
 			branches = lbdao.getAllBranches();
 			branch = this.getBranchByID(branches, branchId);
@@ -247,6 +247,20 @@ public class AdminService {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/branches", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public List<LibraryBranch> getAllBranches() throws SQLException{
+		List<LibraryBranch> branches = new ArrayList<>();
+		try {
+			branches = lbdao.getAllBranches();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return branches;
 	}
 	
 	
@@ -295,15 +309,15 @@ public class AdminService {
 		try {
 			List<Publisher> publishers = publisherDao.getAllPublishers();
 			publisher = this.getPublisherByID(publishers, publisherId);
-			if (publisherName.trim().length() != 0) {
+			if (publisherName != null && publisherName.trim().length() != 0) {
 				publisher.setPublisherName(publisherName);
 				publisherDao.updateName(publisher);
 			}
-			if (publisherAddress.trim().length() != 0) {
+			if (publisherAddress != null && publisherAddress.trim().length() != 0) {
 				publisher.setPublisherAddress(publisherAddress);
 				publisherDao.updateAddress(publisher);
 			}
-			if (publisherPhone.trim().length() != 0) {
+			if (publisherPhone != null && publisherPhone.trim().length() != 0) {
 				publisher.setPublisherPhone(publisherPhone);
 				publisherDao.updatePhone(publisher);
 			}
@@ -327,23 +341,57 @@ public class AdminService {
 		}
 	}
 	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/publishers", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public List<Publisher> getAllPublishers() throws SQLException{
+		List<Publisher> publishers = new ArrayList<>();
+		try {
+			publishers = publisherDao.getAllPublishers();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return publishers;
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/publishers/{publisherId}", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public Publisher getPublisher(@PathVariable int publisherId) throws SQLException{
+		Publisher publisher=null;
+		try {
+			List<Publisher> publishers = publisherDao.getAllPublishers();
+			publisher = this.getPublisherByID(publishers, publisherId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return publisher;
+	}
+	
+	
 	@Transactional
 	@RequestMapping(value = "/admin/books", 
 		method = RequestMethod.POST, 
 		consumes = "application/json",
 		produces = "application/json")
 	public ResponseEntity<Book> addBook(@RequestParam String title, 
-			@RequestParam int publisherId, 
+			@RequestParam(value="publisherId") int publisherId, 
 			UriComponentsBuilder ucb) throws SQLException {
 		Book book = null;
 		int bookId = 0;
 		try {
 			book = new Book();
 			book.setTitle(title);
-			List<Publisher> publishers = publisherDao.getAllPublishers();
-			Publisher publisher = this.getPublisherByID(publishers, publisherId);
-			book.setPublisher(publisher);
+			if (publisherId != 0) {
+				List<Publisher> publishers = publisherDao.getAllPublishers();
+				Publisher publisher = this.getPublisherByID(publishers, publisherId);
+				book.setPublisher(publisher);
+			}
 			bookId = bookDao.addBookWithID(book);
+			List<Book> books = bookDao.readAllBooks();
+			book = this.getBookById(books, bookId);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -370,7 +418,7 @@ public class AdminService {
 		try {
 			List<Book> books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);
-			if (genreName.trim().length() != 0) {
+			if (genreName != null && genreName.trim().length() != 0) {
 				Genre genre = new Genre();
 				genre.setGenreName(genreName);
 				genreId = genreDao.addGenreWithID(genre);
@@ -418,17 +466,32 @@ public class AdminService {
 	
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/books/{bookId}", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public Book getBook(@PathVariable int bookId) throws SQLException{
+		Book book=null;
+		try {
+			List<Book> books = bookDao.readAllBooks();
+			book = this.getBookById(books, bookId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return book;
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/books/{bookId}", 
 		method = RequestMethod.PATCH, 
 		consumes = "application/json",
 		produces = "application/json")
 	public Book editBook(@PathVariable int bookId, 
 			@RequestParam(value="title", required=false) String title, 
-			@RequestParam(value="title", required=false) int publisherId) throws SQLException{
+			@RequestParam(value="publisherId", required=false) int publisherId) throws SQLException{
 		Book book = null;
 		try {
 			List<Book> books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);
-			if (title.trim().length() != 0) {
+			if (title != null && title.trim().length() != 0) {
 				book.setTitle(title);
 				bookDao.updateBook(book);
 			}
@@ -438,6 +501,8 @@ public class AdminService {
 				book.setPublisher(publisher);
 				bookDao.updateBookPublisher(book);
 			}
+			books = bookDao.readAllBooks();
+			book = this.getBookById(books, bookId);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} 
@@ -457,4 +522,5 @@ public class AdminService {
 		} 
 		return genres;
 	}
+
 }

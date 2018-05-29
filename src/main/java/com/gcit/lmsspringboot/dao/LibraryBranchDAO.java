@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,8 @@ import com.gcit.lmsspringboot.entity.LibraryBranch;
 @Component
 public class LibraryBranchDAO extends BaseDAO<LibraryBranch> 
 	implements ResultSetExtractor<List<LibraryBranch>>{
+	
+	private static final Logger logger = LoggerFactory.getLogger(LibraryBranchDAO.class);
 
 	public void addBranch(LibraryBranch lb) throws ClassNotFoundException, SQLException {
 		mySqlTemplate.update("insert into tbl_library_branch(branchName, branchAddress) values(?, ?)", 
@@ -38,8 +42,8 @@ public class LibraryBranchDAO extends BaseDAO<LibraryBranch>
 			return ps;
 		}, keyHolder);
 
-		BigDecimal id = (BigDecimal) keyHolder.getKeys().get(id_column);
-		return id.intValue();
+		logger.info("Id is {}", keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
 	}
 	
 	public void updateBranchName(LibraryBranch lb, String branchName) throws ClassNotFoundException, SQLException {
