@@ -542,7 +542,7 @@ public class AdminService {
 		}
 		HttpHeaders headers = new HttpHeaders();
 		URI locationUri =
-				ucb.path("/admin/genre/")
+				ucb.path("/admin/genres/")
 				.path(String.valueOf(genreId))
 				.build()
 				.toUri();

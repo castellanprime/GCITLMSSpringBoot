@@ -1,0 +1,85 @@
+<!-- Admin view/genres -->
+<div class="container-fluid text-left" style="background: white" ng-controller="genreController">
+	<h1 class="cover-heading">Genres</h1>
+	<button type="button" class="btn btn-primary btn-lg"
+		data-toggle="modal" data-target="#addGenreModal">Add a Genre</button>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Genre Name</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="g in genres">
+				<td>{{$index+1}}</td>
+				<td>{{g.genreName}}</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editGenreModal"
+						ng-click="editGenreModal(g)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deleteGenre(g.genre_id)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editGenreModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit Genre</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						Enter new Genre Name:<br /> <input type="text"
+							maxlength="45" ng-model="genre.genreName"
+							value="genre.genreName" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetGenre()">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="updateGenre(genre)" data-dismiss="modal">Save changes</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+	
+	<div class="modal fade text-dark" id="addGenreModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">Add Genre</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						Enter Genre Name:<br /> <input type="text"
+							maxlength="45" ng-model="genreName" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="createGenre(genreName)" 
+						data-dismiss="modal">Create</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>
