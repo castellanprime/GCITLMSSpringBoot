@@ -13,6 +13,10 @@ lmsApp.config(function($routeProvider) {
     	templateUrl: "views/admin/publishers.html"
     }).when("/admin/genres", {
     	templateUrl: "views/admin/genres.html"
+    }).when("/admin/branches", {
+    	templateUrl: "views/admin/branches.html"
+    }).when("/admin/books", {
+    	templateUrl: "views/admin/books.html"
     }).when("/librarian", {
     	templateUrl: "views/librarian/index.html"
     }).when("/borrower", {

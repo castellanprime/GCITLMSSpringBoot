@@ -1,0 +1,108 @@
+<!-- Admin view/branches -->
+<div class="container-fluid text-left" style="background: white" ng-controller="branchController">
+	<h1 class="cover-heading">Branches</h1>
+	<button type="button" class="btn btn-primary btn-lg"
+		data-toggle="modal" data-target="#addBranchModal">Add a New Branch</button>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Branch Name</th>
+		      <th scope="col">Branch Address</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="br in branches">
+				<td>{{$index+1}}</td>
+				<td>{{br.branchName}}</td>
+				<td>{{br.branchAddress}}</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editBranchModal"
+						ng-click="editBranchModal(br)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deleteBranch(br.branchId)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editBranchModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="branch-name" class="col-form-label">Enter new branch name:</label>
+          					<input type="text"
+          						id="branch-name"
+								maxlength="45" ng-model="branch.branchName"
+								value="branch.branchName">
+          				</div>
+          				<div class="form-group">
+          					<label for="branch-address" class="col-form-label">Enter new branch address:</label>
+          					<input type="text"
+          						id="branch-address"
+								maxlength="45" ng-model="branch.branchAddress"
+								value="branch.branchAddress">
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBranch()">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBranch(branch)" data-dismiss="modal">Save changes</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+	
+	<div class="modal fade text-dark" id="addBranchModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">Add Publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="new-branch-name" class="col-form-label">Enter Branch name:</label>
+          					<input type="text"
+          						id="new-branch-name"
+								maxlength="45" ng-model="branchName" required>
+          				</div>
+          				<div class="form-group">
+          					<label for="new-branch-address" class="col-form-label">Enter Branch address:</label>
+          					<input type="text"
+          						id="new-branch-address"
+								maxlength="45" ng-model="branchAddress" required>
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="createBranch(branchName, branchAddress)" 
+						data-dismiss="modal">Create</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

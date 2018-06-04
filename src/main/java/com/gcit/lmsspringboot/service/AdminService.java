@@ -205,16 +205,12 @@ public class AdminService {
 		method = RequestMethod.POST, 
 		consumes = "application/json",
 		produces = "application/json")
-	public ResponseEntity<LibraryBranch> addBranch(@RequestParam(value="name", required=true) String name, 
-			@RequestParam(value="address", required=true) String address,
+	public ResponseEntity<LibraryBranch> addBranch(@RequestBody LibraryBranch sentLibraryBranch,
 			UriComponentsBuilder ucb) throws SQLException {
 		LibraryBranch branch = null;
 		int branchId = 0;
 		try {
-			branch = new LibraryBranch();
-			branch.setBranchAddress(address);
-			branch.setBranchName(name);
-			branchId = lbdao.addBranchWithID(branch);
+			branchId = lbdao.addBranchWithID(sentLibraryBranch);
 			List<LibraryBranch> branches = lbdao.getAllBranches();
 			branch = this.getBranchByID(branches, branchId);
 		} catch (ClassNotFoundException e) {
@@ -237,11 +233,12 @@ public class AdminService {
 		consumes = "application/json",
 		produces = "application/json")
 	public LibraryBranch editBranch(@PathVariable int branchId, 
-			@RequestParam(value="name", required=false) String branchName,
-			@RequestParam(value="address", required=false) String branchAddress)
+			@RequestBody LibraryBranch sentLibraryBranch)
 			throws SQLException {
 		LibraryBranch branch = null;
 		try {
+			String branchName = sentLibraryBranch.getBranchName();
+			String branchAddress = sentLibraryBranch.getBranchAddress();
 			List<LibraryBranch> branches = lbdao.getAllBranches();
 			LibraryBranch libraryBranch = this.getBranchByID(branches, branchId);
 			if (branchName != null && branchName.trim().length() != 0) {
