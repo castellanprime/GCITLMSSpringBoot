@@ -113,7 +113,6 @@ public class AdminService {
 	@Transactional
 	@RequestMapping(value = "/admin/authors", 
 		method = RequestMethod.POST, 
-		consumes = "application/json",
 		produces = "application/json")
 	public ResponseEntity<Author> addAuthor(@RequestParam String name, 
 			UriComponentsBuilder ucb) throws SQLException {
@@ -141,10 +140,9 @@ public class AdminService {
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/authors/{authorId}", 
 			method = RequestMethod.PATCH, 
-			consumes = "application/json",
 			produces = "application/json")
 	public Author editAuthor(@PathVariable int authorId, 
-			@RequestParam String authorName) throws SQLException{
+			@RequestParam(value="name") String authorName) throws SQLException{
 		Author author = null;
 		try {
 			author = new Author();
