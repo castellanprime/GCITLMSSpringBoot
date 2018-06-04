@@ -65,6 +65,15 @@ public class AdminService {
 		return null;
 	}
 	
+	private Genre getGenre(List<Genre> genres, int genreId) {
+		for (Genre genre: genres) {
+			if (genre.getGenre_id() == genreId) {
+				return genre;
+			}
+		}
+		return null;
+	}
+	
 	private LibraryBranch getBranchByID(List<LibraryBranch> branches, int branchId) {
 		for (LibraryBranch libraryBranch: branches) {
 			if (libraryBranch.getBranchId() == branchId) {
@@ -165,7 +174,7 @@ public class AdminService {
 		return author;
 	}
 	
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@RequestMapping(value = "/admin/authors/{authorId}", 
 			method = RequestMethod.DELETE)
 	public void deleteAuthor(@PathVariable int authorId) throws SQLException {
@@ -252,7 +261,7 @@ public class AdminService {
 	}
 	
 	
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@RequestMapping(value = "/admin/branches/{branchId}", 
 			method = RequestMethod.DELETE)
 	public void deleteBranch(@PathVariable int branchId) throws SQLException {
@@ -283,20 +292,13 @@ public class AdminService {
 	@Transactional
 	@RequestMapping(value = "/admin/publishers", 
 		method = RequestMethod.POST, 
-		consumes = "application/json",
 		produces = "application/json")
-	public ResponseEntity<Publisher> addPublisher(@RequestParam(value="name", required=true) String name, 
-			@RequestParam(value="address", required=true) String address,
-			@RequestParam(value="phone", required=true) String phone,
+	public ResponseEntity<Publisher> addPublisher(@RequestBody Publisher sentPublisher,
 			UriComponentsBuilder ucb) throws SQLException {
 		Publisher publisher = null;
 		int publisherId = 0;
 		try {
-			publisher = new Publisher();
-			publisher.setPublisherAddress(address);
-			publisher.setPublisherName(name);
-			publisher.setPublisherPhone(phone);
-			publisherId = publisherDao.addPublisherWithID(publisher);
+			publisherId = publisherDao.addPublisherWithID(sentPublisher);
 			List<Publisher> publishers = publisherDao.getAllPublishers();
 			publisher = this.getPublisherByID(publishers, publisherId);
 		} catch (ClassNotFoundException e) {
@@ -316,13 +318,14 @@ public class AdminService {
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/publishers/{publisherId}", 
 		method = RequestMethod.PATCH, 
-		consumes = "application/json",
 		produces = "application/json")
-	public Publisher editPublisher(@PathVariable int publisherId ,@RequestParam(value="name", required=false) String publisherName, 
-			@RequestParam(value="address", required=false) String publisherAddress,
-			@RequestParam(value="phone", required=false) String publisherPhone) throws SQLException {
+	public Publisher editPublisher(@PathVariable int publisherId, 
+			@RequestBody Publisher sentPublisher) throws SQLException {
 		Publisher publisher = null;
 		try {
+			String publisherName = sentPublisher.getPublisherName();
+			String publisherAddress = sentPublisher.getPublisherAddress();
+			String publisherPhone = sentPublisher.getPublisherPhone();
 			List<Publisher> publishers = publisherDao.getAllPublishers();
 			publisher = this.getPublisherByID(publishers, publisherId);
 			if (publisherName != null && publisherName.trim().length() != 0) {
@@ -344,7 +347,7 @@ public class AdminService {
 		return publisher;
 	}
 	
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@RequestMapping(value = "/admin/publishers/{publisherId}", 
 			method = RequestMethod.DELETE)
 	public void deletePublisher(@PathVariable int publisherId) throws SQLException {
@@ -428,17 +431,11 @@ public class AdminService {
 		consumes = "application/json",
 		produces = "application/json")
 	public Book addGenreToBook(@PathVariable int bookId, 
-			@RequestParam(name="genreName", required=false) String genreName, 
 			@RequestParam int genreId) throws SQLException{
 		Book book = null;
 		try {
 			List<Book> books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);
-			if (genreName != null && genreName.trim().length() != 0) {
-				Genre genre = new Genre();
-				genre.setGenreName(genreName);
-				genreId = genreDao.addGenreWithID(genre);
-			}
 			bookDao.addBookGenres(book, genreId);
 			books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);
@@ -467,7 +464,7 @@ public class AdminService {
 		return book;
 	}
 	
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@RequestMapping(value = "/admin/books/{bookId}", 
 			method = RequestMethod.DELETE)
 	public void deleteBook(@PathVariable int bookId) throws SQLException {
@@ -523,6 +520,62 @@ public class AdminService {
 			e.printStackTrace();
 		} 
 		return book;
+	}
+
+	
+	@Transactional
+	@RequestMapping(value = "/admin/genres", 
+		method = RequestMethod.POST, 
+		produces = "application/json")
+	public ResponseEntity<Genre> addGenre(@RequestParam(value="name") String genre_name, 
+			UriComponentsBuilder ucb) throws SQLException {
+		Genre genre = null;
+		int genreId = 0;
+		try {
+			genre = new Genre();
+			genre.setGenreName(genre_name);
+			genreId = genreDao.addGenreWithID(genre);
+			List<Genre> genres = genreDao.getAllGenres();
+			genre = this.getGenre(genres, genreId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		HttpHeaders headers = new HttpHeaders();
+		URI locationUri =
+				ucb.path("/admin/genre/")
+				.path(String.valueOf(genreId))
+				.build()
+				.toUri();
+		headers.setLocation(locationUri);
+		return new ResponseEntity<>(genre, headers, HttpStatus.CREATED);
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/genres/{genreId}", 
+		method = RequestMethod.PATCH, 
+		produces = "application/json")
+	public void editGenre(@PathVariable int genreId, @RequestParam String name) throws SQLException{
+		try {
+			List<Genre> genres = genreDao.getAllGenres();
+			Genre genre = this.getGenre(genres, genreId);
+			genre.setGenreName(name);
+			genreDao.editGenre(genre);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@RequestMapping(value = "/admin/genres/{genreId}", 
+			method = RequestMethod.DELETE)
+	public void deleteGenre(@PathVariable int genreId) throws SQLException {
+		try {
+			Genre genre = new Genre();
+			genre.setGenre_id(genreId);
+			genreDao.deleteGenre(genre);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@ResponseStatus(HttpStatus.OK)

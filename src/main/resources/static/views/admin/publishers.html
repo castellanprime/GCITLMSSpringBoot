@@ -1,0 +1,123 @@
+<!-- Admin view/publishers -->
+<div class="container-fluid text-left" style="background: white" ng-controller="publisherController">
+	<h1 class="cover-heading">Publishers</h1>
+	<button type="button" class="btn btn-primary btn-lg"
+		data-toggle="modal" data-target="#addPublisherModal">Add a New Publisher</button>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Publisher Name</th>
+		      <th scope="col">Publisher Address</th>
+		      <th scope="col">Publisher Phone</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="p in publishers">
+				<td>{{$index+1}}</td>
+				<td>{{p.publisherName}}</td>
+				<td>{{p.publisherAddress}}</td>
+				<td>{{p.publisherPhone}}</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editPublisherModal"
+						ng-click="editPublisherModal(p)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deletePublisher(p.publisherId)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editPublisherModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="publisher-name" class="col-form-label">Enter new publisher name:</label>
+          					<input type="text"
+          						id="publisher-name"
+								maxlength="45" ng-model="publisher.publisherName"
+								value="publisher.publisherName">
+          				</div>
+          				<div class="form-group">
+          					<label for="publisher-address" class="col-form-label">Enter new publisher address:</label>
+          					<input type="text"
+          						id="publisher-address"
+								maxlength="45" ng-model="publisher.publisherAddress"
+								value="publisher.publisherAddress">
+          				</div>
+          				<div class="form-group">
+          					<label for="publisher-phone" class="col-form-label">Enter new publisher phone:</label>
+          					<input type="text"
+          						id="publisher-phone"
+								maxlength="45" ng-model="publisher.publisherPhone"
+								value="publisher.publisherPhone">
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetPublisher()">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="updatePublisher(publisher)" data-dismiss="modal">Save changes</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+	
+	<div class="modal fade text-dark" id="addPublisherModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">Add Publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="new-publisher-name" class="col-form-label">Enter Publisher name:</label>
+          					<input type="text"
+          						id="new-publisher-name"
+								maxlength="45" ng-model="publisherName" required>
+          				</div>
+          				<div class="form-group">
+          					<label for="new-publisher-address" class="col-form-label">Enter Publisher address:</label>
+          					<input type="text"
+          						id="new-publisher-address"
+								maxlength="45" ng-model="publisherAddress" required>
+          				</div>
+          				<div class="form-group">
+          					<label for="new-publisher-phone" class="col-form-label">Enter Publisher phone:</label>
+          					<input type="text"
+          						id="new-publisher-phone"
+								maxlength="45" ng-model="publisherPhone" required>
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="createPublisher(publisherName, publisherAddress, publisherPhone)" 
+						data-dismiss="modal">Create</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

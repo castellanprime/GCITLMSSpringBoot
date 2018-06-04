@@ -7,8 +7,10 @@ lmsApp.config(function($routeProvider) {
     	templateUrl: "views/home.html"
     }).when("/admin", {
     	templateUrl: "views/admin/index.html"
+    }).when("/admin/authors", {
+    	templateUrl: "views/admin/authors.html"
     }).when("/admin/publishers", {
-    	templateUrl: "views/admin/publishsers.html"
+    	templateUrl: "views/admin/publishers.html"
     }).when("/librarian", {
     	templateUrl: "views/librarian/index.html"
     }).when("/borrower", {
