@@ -143,13 +143,15 @@ public class AdminService {
 			method = RequestMethod.PATCH, 
 			produces = "application/json")
 	public Author editAuthor(@PathVariable int authorId, 
-			@RequestParam(value="name") String authorName) throws SQLException{
+			@RequestParam(value="name", required=false) String authorName) throws SQLException{
 		Author author = null;
 		try {
 			author = new Author();
 			author.setAuthorId(authorId);
-			author.setAuthorName(authorName);
-			authorDao.editAuthor(author);
+			if (authorName != null && authorName.trim().length() != 0) {
+				author.setAuthorName(authorName);
+				authorDao.editAuthor(author);
+			}
 			List<Author> authors = authorDao.getAllAuthors();
 			author = this.getAuthor(authors, authorId);
 		} catch (ClassNotFoundException e) {
@@ -186,6 +188,17 @@ public class AdminService {
 		}
 	}
 	
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@RequestMapping(value = "/admin/authors/{authorId}/book/{bookId}", 
+			method = RequestMethod.DELETE)
+	public void deleteAuthorFromBook(@PathVariable int authorId, @PathVariable int bookId) throws SQLException {
+		try {
+			authorDao.removeAuthorFromBook(authorId, bookId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/authors", 
 			method = RequestMethod.GET, 
@@ -194,6 +207,9 @@ public class AdminService {
 		List<Author> authors = new ArrayList<>();
 		try {
 			authors = authorDao.getAllAuthors();
+			for (Author a: authors) {
+				a.setBooks(bookDao.getAllBooksForAnAuthor(a));
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

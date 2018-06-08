@@ -38,8 +38,29 @@ lmsApp.controller("bookController", function($scope, endpointConfig, lmsConstant
 	
 	$scope.selectedAuthors = [];
 	
-	$scope.selectAuthor = function(author){
+	$scope.selectAuthor = function(author, book){
 		console.log(author);
+		
+		// Check if the added element is already there
+		let oldObjs = book.authors.map(function(item){
+			return item.authorId;
+		});
+		console.log("Authors for book: ", oldObjs);
+		let oldObjsSet = new Set(oldObjs);
+		let authorObjs = author.map(function(item){
+			return item.authorId;
+		})
+		let authorSet = new Set(authorObjs);
+		authorObjs = Array.from(new Set([...authorSet].filter(x => !oldObjsSet.has(x))));
+		console.log("Filtered author:" , authorObjs);
+		let filteredAuthors = authorObjs.map(function(item){
+			let val = author.find(function(element){
+				return element.bookId === item;
+			});
+			return val;
+		});
+		author = filteredAuthors;
+		
 		if ($scope.selectedAuthors.length === 0){
 			$scope.selectedAuthors.push(...author);
 		} else {
@@ -57,7 +78,7 @@ lmsApp.controller("bookController", function($scope, endpointConfig, lmsConstant
 			});
 			$scope.selectedAuthors = finalObjs;
 		} 
-		console.log($scope.selectedAuthors);
+		console.log("Final selected author:", $scope.selectedAuthors);
 	}
 	
 	$scope.updateBookAuthor = function(book){
@@ -95,7 +116,27 @@ lmsApp.controller("bookController", function($scope, endpointConfig, lmsConstant
 	
 	$scope.selectedGenres = [];
 	
-	$scope.selectGenre = function(genre){
+	$scope.selectGenre = function(genre, book){
+		// Check if the added element is already there
+		let oldObjs = book.authors.map(function(item){
+			return item.genre_id;
+		});
+		console.log("Genre for book: ", oldObjs);
+		let oldObjsSet = new Set(oldObjs);
+		let genreObjs = genre.map(function(item){
+			return item.genre_id;
+		})
+		let genreSet = new Set(genreObjs);
+		genreObjs = Array.from(new Set([...genreSet].filter(x => !oldObjsSet.has(x))));
+		console.log("Filtered genre:" , genreObjs);
+		let filteredGenres = genreObjs.map(function(item){
+			let val = genre.find(function(element){
+				return element.genre_id === item;
+			});
+			return val;
+		});
+		genre = filteredGenre;
+		
 		if ($scope.selectedGenres.length === 0){
 			$scope.selectedGenres.push(...genre);
 		} else {

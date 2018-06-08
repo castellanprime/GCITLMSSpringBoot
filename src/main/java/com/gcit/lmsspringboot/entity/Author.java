@@ -3,6 +3,8 @@
  */
 package com.gcit.lmsspringboot.entity;
 
+import java.util.List;
+
 /**
  * @author iratusmachina
  *
@@ -11,6 +13,15 @@ public class Author {
 	
 	private int authorId;
 	private String authorName;
+	private List<Book> books;
+
+	public List<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
 
 	public int getAuthorId() {
 		return authorId;

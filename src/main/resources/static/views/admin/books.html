@@ -103,7 +103,7 @@
 					<div class="form-group">
        					<label for="author-name" class="col-form-label">Enter new Authors:</label>
        					<select class="form-control" id="author-name" ng-model="authorSelected" 
-       						ng-change="selectAuthor(authorSelected)"
+       						ng-change="selectAuthor(authorSelected, book)"
  							data-ng-options="a as a.authorName for a in authors" multiple>
 							<option value="">Select options</option>
 						</select>
@@ -125,7 +125,7 @@
 					<div class="form-group">
        					<label for="genre-name" class="col-form-label">Add new Genre:</label>
        					<select class="form-control" id="genre-name" ng-model="genreSelected" 
-       						ng-change="selectGenre(genreSelected)"
+       						ng-change="selectGenre(genreSelected, book)"
  							data-ng-options="g as g.genreName for g in genres" multiple>
 							<option value="">Select options</option>
 						</select>

@@ -74,6 +74,10 @@ public class AuthorDAO extends BaseDAO<Author> implements ResultSetExtractor<Lis
 					this);
 	}
 	
+	public void removeAuthorFromBook(int authorId, int bookId) throws ClassNotFoundException, SQLException {
+		mySqlTemplate.update("delete from tbl_book_authors where authorId = ? and bookId = ?", authorId, bookId);
+	}
+	
 	@Override
 	public List<Author> extractData(ResultSet rs) throws SQLException {
 		// TODO Auto-generated method stub

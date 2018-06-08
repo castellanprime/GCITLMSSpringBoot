@@ -8,6 +8,7 @@
 			<tr>
 		      <th scope="col">#</th>
 		      <th scope="col">Author Name</th>
+		      <th scope="col">Books authored</th>
 		      <th scope="col">Edit</th>
 		      <th scope="col">Delete</th>
 		    </tr>
@@ -16,6 +17,11 @@
 			<tr ng-repeat="a in authors">
 				<td>{{$index+1}}</td>
 				<td>{{a.authorName}}</td>
+				<td>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item" ng-repeat="book in a.books">{{book.title}}</li>
+					</ul>
+				</td>
 				<td><button type="button" class="btn btn-info"
 						data-toggle="modal" data-target="#editAuthorModal"
 						ng-click="editAuthorModal(a)">
@@ -39,17 +45,31 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<div class="container">
-						Enter new Author Name:<br /> <input type="text"
+					<div class="form-group">
+        				<label for="author-name" class="col-form-label">Enter new author name:</label>
+        				<input type="text"
+        					id="author-name"
 							maxlength="45" ng-model="author.authorName"
-							value="author.authorName" required>
-	         		</div>
+							value="author.authorName">
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateAuthor(author)">Save new Author Name</button>
+					<br /><br />
+					<div class="form-group">
+       					<label for="book-name" class="col-form-label">Remove book from author:</label>
+       					<select class="form-control" id="book-name" ng-model="bookSelected" 
+       						ng-change="selectBook(bookSelected)"
+ 							data-ng-options="b as b.title for b in author.books">
+							<option value="">Select options</option>
+						</select>
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="removeAuthorFromBook(author)">Save Changes</button>
+					<br /><br />
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
 						data-dismiss="modal" ng-click="resetAuthor()">Close</button>
-					<button type="button" class="btn btn-success"
-						ng-click="updateAuthor(author)" data-dismiss="modal">Save changes</button>
 				</div>
 			</div>
 		</div>

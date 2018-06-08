@@ -80,6 +80,12 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 	public List<Book> readAllBooks() throws ClassNotFoundException, SQLException {
 		return mySqlTemplate.query("select * from tbl_book", this);
 	}
+	
+	public List<Book> getAllBooksForAnAuthor(Author author) throws ClassNotFoundException, SQLException {
+		return mySqlTemplate.query("select tba.bookId, tb.title, tb.pubId from tbl_book_authors tba, tbl_book tb where tba.bookId = tb.bookId and tba.authorId = ?", 
+					new Object[] {author.getAuthorId()}, 
+					this);
+	}
 
 	@Override
 	public List<Book> extractData(ResultSet rs) throws SQLException {
