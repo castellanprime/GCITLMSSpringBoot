@@ -1,0 +1,121 @@
+<!-- Admin view/publishers -->
+<div class="container-fluid text-left" style="background: white" ng-controller="bookLoanController">
+	<h1 class="cover-heading text-dark">Book Loans</h1>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Book Name</th>
+		      <th scope="col">Branch Name</th>
+		      <th scope="col">Loaned to</th>
+		      <th scope="col">Date taken out</th>
+		      <th scope="col">Date to return</th>
+		      <th scope="col">Date returned</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="bookLoan in adminBookLoans">
+				<td>{{$index+1}}</td>
+				<td>{{bookLoan.book.title}}</td>
+				<td>{{bookLoan.branch.branchName}}</td>
+				<td>{{bookLoan.borrower.name}}</td>
+				<td>{{bookLoan.dateOut}}</td>
+				<td>{{bookLoan.dueDate}}</td>
+				<td>{{bookLoan.dateIn}}</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editBookLoanModal"
+						ng-click="editBookLoanModal(bookLoan)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deleteBookLoan(bookLoan)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editBookLoanModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-row">
+          					<div class="form-group col-auto">
+          						<input type="number"
+	          						id="hours" min="0" ng-model="days">
+	          					<label for="hours" class="col-form-label">Enter days to:</label>
+							</div>
+							<div class="btn-group btn-group-toggle" data-toggle="buttons">
+							  <label class="btn btn-secondary active">
+							    <input type="radio" name="options" id="option1" autocomplete="off" 
+							    ng-model="currentSelectedDayAction" ng-value="'Add'"checked> Add
+							  </label>
+							  <label class="btn btn-secondary">
+							    <input type="radio" name="options" id="option2" autocomplete="off"
+							    ng-model="currentSelectedDayAction" ng-value="'Minus'" > Minus
+							  </label>
+							</div>
+          				</div>
+          				<div class="form-row">
+          					<div class="form-group col-auto">
+          						<input type="number"
+	          						id="hours" ng-model="hours">
+	          					<label for="hours" class="col-form-label">Enter hours:</label>
+							</div>
+							<div class="custom-control custom-radio custom-control-inline">
+								<input class="custom-control-input" type="radio" id="customRadioInline3" 
+									name="customRadioInline1"
+									ng-model="currentSelectedHourAction" value="Add"
+									ng-value="'Add'">
+  								<label class="custom-control-label" for="customRadioInline3">Add</label>
+							</div>
+							<div class="custom-control custom-radio custom-control-inline">
+								<input class="custom-control-input" type="radio" id="customRadioInline4" 
+									name="customRadioInline1"
+									ng-model="currentSelectedHourAction" value="Minus"
+									ng-value="'Minus'">
+  								<label class="custom-control-label" for="customRadioInline4">Minus</label>
+							</div>
+          				</div>
+          				<div class="form-row">
+          					<div class="form-group col-auto">
+          						<input type="number"
+	          						id="hours" ng-model="mins">
+	          					<label for="hours" class="col-form-label">Enter mins to:</label>
+							</div>
+							<div class="custom-control custom-radio custom-control-inline">
+								<input class="custom-control-input" type="radio" id="customRadioInline5" 
+									name="customRadioInline1"
+									ng-model="currentSelectedMinAction" value="Add"
+									ng-value="'Add'">
+  								<label class="custom-control-label" for="customRadioInline5">Add</label>
+							</div>
+							<div class="custom-control custom-radio custom-control-inline">
+								<input class="custom-control-input" type="checkbox" id="customRadioInline5" 
+									name="customRadioInline1" 
+									ng-model="currentSelectedMinAction" value="Minus"
+									ng-value="'Minus'">
+  								<label class="custom-control-label" for="customRadioInline5">Minus</label>
+							</div>
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBookLoan()">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBookLoan(bookLoan, days, hours, mins)" data-dismiss="modal">Save changes</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

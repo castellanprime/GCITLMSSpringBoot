@@ -13,4 +13,6 @@ lmsApp.constant("lmsConstants",{
 	SPECIFIC_BRANCH: "http://localhost:8080/lmsspringboot/admin/branches/",
 	ALL_BOOKS: "http://localhost:8080/lmsspringboot/admin/books",
 	SPECIFIC_BOOK: "http://localhost:8080/lmsspringboot/admin/books/",
+	ALL_BOOK_LOANS_ADMIN: "http://localhost:8080/lmsspringboot/admin/loans",
+	SPECIFIC_BOOK_LOAN_ADMIN: "http://localhost:8080/lmsspringboot/admin/loans/",
 });

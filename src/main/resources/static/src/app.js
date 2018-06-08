@@ -17,6 +17,8 @@ lmsApp.config(function($routeProvider) {
     	templateUrl: "views/admin/branches.html"
     }).when("/admin/books", {
     	templateUrl: "views/admin/books.html"
+    }).when("/admin/bookLoans", {
+    	templateUrl: "views/admin/bookloans.html"
     }).when("/librarian", {
     	templateUrl: "views/librarian/index.html"
     }).when("/borrower", {

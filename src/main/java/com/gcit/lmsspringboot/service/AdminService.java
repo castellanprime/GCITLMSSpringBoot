@@ -24,6 +24,7 @@ import com.gcit.lmsspringboot.entity.Genre;
 import com.gcit.lmsspringboot.dao.AuthorDAO;
 import com.gcit.lmsspringboot.dao.BookDAO;
 import com.gcit.lmsspringboot.dao.BookLoanDAO;
+import com.gcit.lmsspringboot.dao.BorrowerDAO;
 import com.gcit.lmsspringboot.dao.GenreDAO;
 import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.dao.PublisherDAO;
@@ -31,6 +32,8 @@ import com.gcit.lmsspringboot.entity.Author;
 import com.gcit.lmsspringboot.entity.Book;
 import com.gcit.lmsspringboot.entity.BookDTO;
 import com.gcit.lmsspringboot.entity.BookLoan;
+import com.gcit.lmsspringboot.entity.BookLoanDTO;
+import com.gcit.lmsspringboot.entity.Borrower;
 import com.gcit.lmsspringboot.entity.LibraryBranch;
 import com.gcit.lmsspringboot.entity.Publisher;
 
@@ -56,7 +59,9 @@ public class AdminService {
 	@Autowired
 	BookLoanDAO bldao;
 	
-
+	@Autowired
+	BorrowerDAO borrowerDao;
+	
 	private Author getAuthor(List<Author> authors, int authorId) {
 		for (Author author: authors) {
 			if (author.getAuthorId() == authorId) {
@@ -106,6 +111,15 @@ public class AdminService {
 		for (BookLoan bookLoan: bookLoans) {
 			if (bookLoan.getBookId() == bookId && bookLoan.getCardNo() == cardNo && bookLoan.getDateOut().isEqual(dateOut)) {
 				return bookLoan;
+			}
+		}
+		return null;
+	}
+	
+	private Borrower getBorrowerById(List<Borrower> borrowers, int cardNo) {
+		for (Borrower borrower: borrowers) {
+			if (borrower.getCardNo() == cardNo) {
+				return borrower;
 			}
 		}
 		return null;
@@ -598,6 +612,30 @@ public class AdminService {
 			e.printStackTrace();
 		} 
 		return genres;
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/loans", 
+		method = RequestMethod.GET, 
+		produces = "application/json")
+	public List<BookLoanDTO> getAllLoans() throws SQLException{
+		List<BookLoanDTO> bookLoanDTOs = new ArrayList<>();
+		try {
+			List<BookLoan> bookLoans = bldao.getAllBookLoans();
+			for (BookLoan bookLoan: bookLoans) {
+				BookLoanDTO b = new BookLoanDTO();
+				b.setBook(this.getBookById(bookDao.readAllBooks(), bookLoan.getBookId()));
+				b.setBorrower(this.getBorrowerById(borrowerDao.getAllBorrowers(), bookLoan.getCardNo()));
+				b.setBranch(this.getBranchByID(lbdao.getAllBranches(), bookLoan.getBranchId()));
+				b.setDateIn(bookLoan.getDateIn());
+				b.setDateOut(bookLoan.getDateOut());
+				b.setDueDate(bookLoan.getDueDate());
+				bookLoanDTOs.add(b);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		return bookLoanDTOs;
 	}
 	
 	@ResponseStatus(HttpStatus.OK)

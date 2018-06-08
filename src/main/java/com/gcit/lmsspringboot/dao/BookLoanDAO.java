@@ -51,6 +51,10 @@ public class BookLoanDAO extends BaseDAO<BookLoan> implements ResultSetExtractor
 				new Object[] { branchId }, this);
 	}
 	
+	public List<BookLoan> getAllBookLoans()  throws ClassNotFoundException, SQLException{
+		return mySqlTemplate.query("select * from tbl_book_loans", this);
+	}
+	
 	public void changeDueDate(BookLoan bookLoan) throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
 		mySqlTemplate.update("update tbl_book_loans set dueDate = ? where bookId = ? and branchId = ? and cardNo = ? and dateOut = ?", 
