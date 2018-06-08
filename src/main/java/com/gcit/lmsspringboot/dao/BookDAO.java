@@ -88,6 +88,7 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 			Book book = new Book();
 			book.setBookId(rs.getInt("bookId"));
 			book.setTitle(rs.getString("title"));
+			book.setPubId(rs.getInt("pubId"));
 			books.add(book);
 		}
 		return books;

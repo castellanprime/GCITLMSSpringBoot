@@ -1,0 +1,144 @@
+<!-- Admin view/genres -->
+<div class="container-fluid text-left" style="background: white" ng-controller="bookController">
+	<h1 class="cover-heading text-dark">Books</h1>
+	<button type="button" class="btn btn-primary btn-lg"
+		data-toggle="modal" data-target="#addBookModal">Add a Book</button>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Book Name</th>
+		      <th scope="col">Written By</th>
+		      <th scope="col">Published By</th>
+		      <th scope="col">Genres</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="bo in books">
+				<td>{{$index+1}}</td>
+				<td>{{bo.title}}</td>
+				<td>
+					<span ng-repeat="a in bo.authors">{{a.authorName}} <span
+						ng-if="!$last"> | </span></span>
+				</td>
+				<td>{{bo.publisher.publisherName}}</td>
+				<td>
+					<span ng-repeat="g in bo.genres">{{g.genreName}} <span
+						ng-if="!$last"> | </span></span>
+				</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editBookModal"
+						ng-click="editBookModal(bo)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deleteBook(bo.bookId)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="addBookModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">Edit Book</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="new-book-name" class="col-form-label">Enter new book name:</label>
+          					<input type="text"
+          						id="new-book-name"
+								maxlength="45" ng-model="bookName">
+          				</div>
+          				<div class="form-group">
+          					<label for="new-publisher-name" class="col-form-label">Add publisher:</label>
+    						<select class="form-control" id="new-publisher-name" 
+    							ng-model="publisherSelected" ng-change="selectPublisher(publisherSelected)"
+    							data-ng-options="pub as pub.publisherName for pub in publishers">
+    							<option value="">Select option</option>
+    						</select>
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="createBook(bookName)" data-dismiss="modal">Create</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+	
+	<div class="modal fade text-dark" id="editBookModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleEditModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleEditModalLabel">Add Book</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+        				<label for="book-name" class="col-form-label">Enter new book name:</label>
+        				<input type="text"
+        					id="book-name"
+							maxlength="45" ng-model="book.bookName"
+							value="book.bookName">
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBookName(book)">Save new Book Name</button>
+					<br /><br />
+					<div class="form-group">
+       					<label for="author-name" class="col-form-label">Enter new Authors:</label>
+       					<select class="form-control" id="author-name" ng-model="authorSelected" 
+       						ng-change="selectAuthor(authorSelected)"
+ 							data-ng-options="a as a.authorName for a in authors" multiple>
+							<option value="">Select options</option>
+						</select>
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBookAuthor(book)">Save new Book Author(s)</button>
+					<br /><br />
+					<div class="form-group">
+         				<label for="publisher-name" class="col-form-label">Add new Publisher:</label>
+         				<select class="form-control" id="publisher-name" ng-model="publisherSelected" 
+         					ng-change="selectPublisher(publisherSelected)"
+   							data-ng-options="pub as pub.publisherName for pub in publishers">
+  							<option value="">Select an option</option>
+  						</select>
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBookPublisher(book)">Save new Book Publisher</button>
+					<br /><br />
+					<div class="form-group">
+       					<label for="genre-name" class="col-form-label">Add new Genre:</label>
+       					<select class="form-control" id="genre-name" ng-model="genreSelected" 
+       						ng-change="selectGenre(genreSelected)"
+ 							data-ng-options="g as g.genreName for g in genres" multiple>
+							<option value="">Select options</option>
+						</select>
+          			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBookGenre(book)">Save new Book Genre(s)</button>
+					<br /><br />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBook()">Close</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

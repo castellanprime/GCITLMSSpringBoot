@@ -29,6 +29,7 @@ import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.dao.PublisherDAO;
 import com.gcit.lmsspringboot.entity.Author;
 import com.gcit.lmsspringboot.entity.Book;
+import com.gcit.lmsspringboot.entity.BookDTO;
 import com.gcit.lmsspringboot.entity.BookLoan;
 import com.gcit.lmsspringboot.entity.LibraryBranch;
 import com.gcit.lmsspringboot.entity.Publisher;
@@ -388,21 +389,15 @@ public class AdminService {
 	@Transactional
 	@RequestMapping(value = "/admin/books", 
 		method = RequestMethod.POST, 
-		consumes = "application/json",
 		produces = "application/json")
-	public ResponseEntity<Book> addBook(@RequestParam String title, 
-			@RequestParam(value="publisherId") int publisherId, 
+	public ResponseEntity<Book> addBook(@RequestBody BookDTO bookDto, 
 			UriComponentsBuilder ucb) throws SQLException {
 		Book book = null;
 		int bookId = 0;
 		try {
 			book = new Book();
-			book.setTitle(title);
-			if (publisherId != 0) {
-				List<Publisher> publishers = publisherDao.getAllPublishers();
-				Publisher publisher = this.getPublisherByID(publishers, publisherId);
-				book.setPublisher(publisher);
-			}
+			book.setTitle(bookDto.getTitle());
+			book.setPublisher(bookDto.getPublisher());
 			bookId = bookDao.addBookWithID(book);
 			List<Book> books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);
@@ -417,46 +412,6 @@ public class AdminService {
 				.toUri();
 		headers.setLocation(locationUri);
 		return new ResponseEntity<>(book, headers, HttpStatus.CREATED);
-	}
-	
-	@Transactional
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/admin/books/{bookId}/genre", 
-		method = RequestMethod.PATCH, 
-		consumes = "application/json",
-		produces = "application/json")
-	public Book addGenreToBook(@PathVariable int bookId, 
-			@RequestParam int genreId) throws SQLException{
-		Book book = null;
-		try {
-			List<Book> books = bookDao.readAllBooks();
-			book = this.getBookById(books, bookId);
-			bookDao.addBookGenres(book, genreId);
-			books = bookDao.readAllBooks();
-			book = this.getBookById(books, bookId);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return book;
-	}
-	
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/admin/books/{bookId}/author", 
-		method = RequestMethod.PATCH, 
-		consumes = "application/json",
-		produces = "application/json")
-	public Book addAuthorToBook(@PathVariable int bookId, @RequestParam int authorId) throws SQLException {
-		Book book = null;
-		try {
-			List<Book> books = bookDao.readAllBooks();
-			book = this.getBookById(books, bookId);
-			bookDao.addBookAuthors(book, authorId);
-			books = bookDao.readAllBooks();
-			book = this.getBookById(books, bookId);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return book;
 	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -488,13 +443,35 @@ public class AdminService {
 	}
 	
 	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/admin/books", 
+			method = RequestMethod.GET, 
+			produces = "application/json")
+	public List<Book> getBooksWithAuthors() throws SQLException{
+		List<Book> books = new ArrayList<>();
+		try {
+			books = bookDao.readAllBooks();
+			for (Book b: books) {
+				b.setAuthors(authorDao.getAllAuthorsForABook(b));
+				b.setGenres(genreDao.getAllGenresForABook(b));
+				Publisher publisher = new Publisher();
+				publisher.setPublisherId(b.getPubId());
+				b.setPublisher(publisherDao.getPublisher(publisher));
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return books;
+	}
+	
+	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/books/{bookId}", 
 		method = RequestMethod.PATCH, 
-		consumes = "application/json",
 		produces = "application/json")
 	public Book editBook(@PathVariable int bookId, 
 			@RequestParam(value="title", required=false) String title, 
-			@RequestParam(value="publisherId", required=false) int publisherId) throws SQLException{
+			@RequestParam(value="publisherId", required=false) Integer publisherId,
+			@RequestParam(value="authorId", required=false) Integer authorId,
+			@RequestParam(value="genreId", required=false) Integer genreId) throws SQLException{
 		Book book = null;
 		try {
 			List<Book> books = bookDao.readAllBooks();
@@ -503,11 +480,17 @@ public class AdminService {
 				book.setTitle(title);
 				bookDao.updateBook(book);
 			}
-			if (publisherId != 0) {
+			if (publisherId != null) {
 				List<Publisher> publishers = publisherDao.getAllPublishers();
-				Publisher publisher = this.getPublisherByID(publishers, publisherId);
+				Publisher publisher = this.getPublisherByID(publishers, publisherId.intValue());
 				book.setPublisher(publisher);
 				bookDao.updateBookPublisher(book);
+			}
+			if (authorId != null) {
+				bookDao.addBookAuthors(book, authorId.intValue());
+			}
+			if (genreId != null) {
+				bookDao.addBookGenres(book, genreId.intValue());
 			}
 			books = bookDao.readAllBooks();
 			book = this.getBookById(books, bookId);

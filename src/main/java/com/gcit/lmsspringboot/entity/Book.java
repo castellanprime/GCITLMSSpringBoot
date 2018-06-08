@@ -13,9 +13,18 @@ import java.util.List;
 public class Book {
 	private int bookId;
 	private String title;
+	private int pubId;
 	private Publisher publisher;
 	private List<Genre> genres;
 	private List<Author> authors;
+	
+	public int getPubId() {
+		return pubId;
+	}
+
+	public void setPubId(int pubId) {
+		this.pubId = pubId;
+	}
 	
 	public List<Genre> getGenres() {
 		return genres;
