@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.gcit.lmsspringboot.entity.Author;
 import com.gcit.lmsspringboot.entity.Book;
+import com.gcit.lmsspringboot.entity.Genre;
 
 /**
  * @author iratusmachina
@@ -85,6 +86,12 @@ public class BookDAO extends BaseDAO<Book> implements ResultSetExtractor<List<Bo
 		return mySqlTemplate.query("select tba.bookId, tb.title, tb.pubId from tbl_book_authors tba, tbl_book tb where tba.bookId = tb.bookId and tba.authorId = ?", 
 					new Object[] {author.getAuthorId()}, 
 					this);
+	}
+	
+	public List<Book> getAllBooksForAGenre(Genre genre)throws ClassNotFoundException, SQLException {
+		return mySqlTemplate.query("select tbg.bookId, tb.title, tb.pubId from tbl_book_genres tbg, tbl_book tb where tbg.bookId = tb.bookId and tbg.genre_Id = ?", 
+				new Object[] {genre.getGenre_id()}, 
+				this);
 	}
 
 	@Override

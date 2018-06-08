@@ -69,6 +69,10 @@ public class GenreDAO extends BaseDAO<Genre> implements ResultSetExtractor<List<
 		return mySqlTemplate.query("select * from tbl_genre tg, tbl_book_genres tbg where tg.genre_id = tbg.genre_Id and tbg.bookId = ?", 
 				new Object[] {book.getBookId()}, this);
 	}
+	
+	public void removeGenreFromBook(int genreId, int bookId) throws ClassNotFoundException, SQLException {
+		mySqlTemplate.update("delete from tbl_book_genres where genre_Id = ? and bookId = ?", genreId, bookId);
+	}
 
 	@Override
 	public List<Genre> extractData(ResultSet rs) throws SQLException {

@@ -34,7 +34,7 @@ lmsApp.controller("authorController", function($scope, endpointConfig, lmsConsta
 	
 	$scope.removeAuthorFromBook = function(book){
 		endpointConfig.deleteObject(
-				lmsConstants.SPECIFIC_AUTHOR+$scope.author.authorId + "/book/" + $scope.selectedBook.bookId 
+				lmsConstants.SPECIFIC_AUTHOR+$scope.author.authorId + "/books/" + $scope.selectedBook.bookId 
 				).then(function(id){
 			endpointConfig.getAllObjects(lmsConstants.ALL_AUTHORS).then(function(data){
 				$scope.authors = data;

@@ -25,6 +25,21 @@ lmsApp.controller("genreController", function($scope, endpointConfig, lmsConstan
 	}
 	
 	
+	$scope.selectBook = function(book){
+		$scope.selectedBook = book;
+		console.log($scope.selectedBook);
+	}
+	
+	$scope.removeGenreFromBook = function(book){
+		endpointConfig.deleteObject(
+				lmsConstants.SPECIFIC_GENRE+$scope.genre.genre_id + "/books/" + $scope.selectedBook.bookId 
+				).then(function(id){
+			endpointConfig.getAllObjects(lmsConstants.ALL_AUTHORS).then(function(data){
+				$scope.genres = data;
+			})
+		});
+	}
+	
 	// Refresh Genre list on clicking close
 	$scope.resetGenre=function(){
 		endpointConfig.getAllObjects(lmsConstants.ALL_GENRES).then(function(data){

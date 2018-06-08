@@ -3,6 +3,7 @@
  */
 package com.gcit.lmsspringboot.entity;
 
+import java.util.List;
 
 /**
  * @author iratusmachina
@@ -12,7 +13,14 @@ package com.gcit.lmsspringboot.entity;
 public class Genre {
 	private int genre_id;
 	private String genre_name;
+	private List<Book> books;
 	
+	public List<Book> getBooks() {
+		return books;
+	}
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
 	public int getGenre_id() {
 		return genre_id;
 	}

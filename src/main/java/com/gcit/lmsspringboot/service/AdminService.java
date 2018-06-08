@@ -189,7 +189,7 @@ public class AdminService {
 	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@RequestMapping(value = "/admin/authors/{authorId}/book/{bookId}", 
+	@RequestMapping(value = "/admin/authors/{authorId}/books/{bookId}", 
 			method = RequestMethod.DELETE)
 	public void deleteAuthorFromBook(@PathVariable int authorId, @PathVariable int bookId) throws SQLException {
 		try {
@@ -572,6 +572,17 @@ public class AdminService {
 		}
 	}
 	
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@RequestMapping(value = "/admin/genres/{genreId}/books/{bookId}", 
+			method = RequestMethod.DELETE)
+	public void deleteGenreFromBook(@PathVariable int genreId, @PathVariable int bookId) throws SQLException {
+		try {
+			genreDao.removeGenreFromBook(genreId, bookId);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/admin/genres", 
 		method = RequestMethod.GET, 
@@ -580,6 +591,9 @@ public class AdminService {
 		List<Genre> genres = new ArrayList<>();
 		try {
 			genres = genreDao.getAllGenres();
+			for (Genre g: genres) {
+				g.setBooks(bookDao.getAllBooksForAGenre(g));
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} 
