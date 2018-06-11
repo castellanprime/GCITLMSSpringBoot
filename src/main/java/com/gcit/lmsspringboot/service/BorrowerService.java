@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import com.gcit.lmsspringboot.dao.BookDAO;
 import com.gcit.lmsspringboot.dao.BookLoanDAO;
 import com.gcit.lmsspringboot.dao.BorrowerDAO;
+import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.entity.Book;
 import com.gcit.lmsspringboot.entity.BookLoan;
 import com.gcit.lmsspringboot.entity.BookLoanDTO;
@@ -42,10 +43,22 @@ public class BorrowerService {
 	@Autowired
 	BookDAO bookDao;
 	
+	@Autowired
+	LibraryBranchDAO lbdao;
+	
 	private Borrower getBorrowerById(List<Borrower> borrowers, int cardNo) {
 		for (Borrower borrower: borrowers) {
 			if (borrower.getCardNo() == cardNo) {
 				return borrower;
+			}
+		}
+		return null;
+	}
+	
+	private LibraryBranch getBranchByID(List<LibraryBranch> branches, int branchId) {
+		for (LibraryBranch libraryBranch: branches) {
+			if (libraryBranch.getBranchId() == branchId) {
+				return libraryBranch;
 			}
 		}
 		return null;
@@ -88,21 +101,21 @@ public class BorrowerService {
 	@RequestMapping(value = "/borrowers/{cardNo}/return", 
 		method = RequestMethod.PATCH, 
 		consumes = "application/json")
-	public BookLoan returnBook(@RequestParam int branchId, 
-			@RequestParam int bookId, @PathVariable int cardNo) 
+	public BookLoan returnBook(@RequestBody BookLoanInputDTO bookLoanInputDto, 
+			@PathVariable int cardNo) 
 			throws SQLException{
 		BookLoan bookLoan = null;
 		try {
-			List<BookLoan> bookLoans = bldao.getAllBookLoansForBranch(branchId);
+			List<BookLoan> bookLoans = bldao.getAllBookLoansForBranch(bookLoanInputDto.getBranchId());
 			for (BookLoan bk: bookLoans) {
-				if (bk.getBookId() == bookId && bk.getCardNo() == cardNo) {
+				if (bk.getBookId() == bookLoanInputDto.getBookId() && bk.getCardNo() == cardNo) {
 					bldao.returnLoan(bk);
 					break;
 				}
 			}
-			bookLoans = bldao.getAllBookLoansForBranch(branchId);
+			bookLoans = bldao.getAllBookLoansForBranch(bookLoanInputDto.getBranchId());
 			for (BookLoan bk: bookLoans) {
-				if (bk.getBookId() == bookId && bk.getCardNo() == cardNo) {
+				if (bk.getBookId() == bookLoanInputDto.getBookId() && bk.getCardNo() == cardNo) {
 					bookLoan = bk;
 				}
 			}
@@ -179,7 +192,7 @@ public class BorrowerService {
 					BookLoanDTO bokL = new BookLoanDTO();
 					bokL.setBook(this.getBookById(bookDao.readAllBooks(), bookLoan.getBookId()));
 					bokL.setBorrower(null);
-					bokL.setBranch(null);
+					bokL.setBranch(this.getBranchByID(lbdao.getAllBranches(), bookLoan.getBranchId()));
 					bokL.setDateIn(null);
 					bokL.setDateOut(null);
 					bokL.setDueDate(null);

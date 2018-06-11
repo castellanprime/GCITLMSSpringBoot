@@ -118,15 +118,31 @@ lmsApp.controller("borrowerController", function($scope, endpointConfig, lmsCons
 					bookLoanInputDto).then(function(id){
 				endpointConfig.getAllObjects(lmsConstants.ALL_BORROWERS).then(function(data){
 					$scope.borrowers = data;
+					$scope.branches = data;
 				})
 			});
 		}
 	}
 	
-	$scope.selectedBooksToReturn = [];
-	
 	$scope.selectBookToReturn = function(book){
-		$scope.selectedBooksToReturn = book;
+		$scope.selectedBookToReturn = book;
+		console.log($scope.selectedBookToReturn);
+	}
+	
+	$scope.returnBook = function(borrower){
+		console.log(borrower);
+		let bookLoanInputDto = {
+			branchId: $scope.selectedBookToReturn.branch.branchId,
+			bookId: $scope.selectedBookToReturn.book.bookId
+		};
+		console.log(bookLoanInputDto);
+		endpointConfig.editObject(lmsConstants.SPECIFIC_BORROWER+borrower.cardNo+"/return", 
+				bookLoanInputDto).then(function(id){
+			endpointConfig.getAllObjects(lmsConstants.ALL_BORROWERS).then(function(data){
+				$scope.borrowers = data;
+				$scope.branches = data;
+			})
+		});
 	}
 	
 	// Refresh Borrower list on clicking close
@@ -135,7 +151,7 @@ lmsApp.controller("borrowerController", function($scope, endpointConfig, lmsCons
 			$scope.borrowers = data;
 		})
 		$scope.selectedBooksToCheckOut = [];
-		$scope.selectedBooksToReturn = []
+		$scope.selectedBooksToReturn = null;
 	}
 	
 	// Create new borrower

@@ -188,7 +188,7 @@
       					<label for="return-book-name" class="col-form-label">Select books to return:</label>
     					<select class="form-control" id="return-book-name" ng-model="bookToReturn" 
     						ng-change="selectBookToReturn(bookToReturn, borrowerToEdit)"
-							data-ng-options="b as b.title for b in borrowerToEdit.currentBookLoans" multiple>
+							data-ng-options="b as b.book.title for b in borrowerToEdit.currentBookLoans">
 							<option value="">Select options</option>
 						</select>
         			</div>
