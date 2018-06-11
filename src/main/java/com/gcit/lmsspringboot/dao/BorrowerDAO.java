@@ -25,7 +25,7 @@ import com.gcit.lmsspringboot.entity.Borrower;
 @Component
 public class BorrowerDAO extends BaseDAO<Borrower> implements ResultSetExtractor<List<Borrower>>{
 
-	private static final Logger logger = LoggerFactory.getLogger(PublisherDAO.class);
+	private static final Logger logger = LoggerFactory.getLogger(BorrowerDAO.class);
 	
 	public void addBorrower(Borrower borrower) throws ClassNotFoundException, SQLException{
 		mySqlTemplate.update("insert into tbl_borrower(name, address, phone) values(?, ?, ?)", 
