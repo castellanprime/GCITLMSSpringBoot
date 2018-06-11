@@ -1,0 +1,84 @@
+<div class="container-fluid text-left" style="background: white" ng-controller="librarianController">
+	<h1 class="cover-heading">Librarian</h1>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Branch Name</th>
+		      <th scope="col">Branch Address</th>
+		      <th scope="col">Edit</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="br in branches">
+				<td>{{$index+1}}</td>
+				<td>{{br.branchName}}</td>
+				<td>{{br.branchAddress}}</td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editBranchModal"
+						ng-click="editBranchModal(br)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editBranchModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit publisher</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="branch-name" class="col-form-label">Enter new branch name:</label>
+          					<input type="text"
+          						id="branch-name"
+								maxlength="45" ng-model="branch.branchName"
+								value="branch.branchName">
+          				</div>
+          				<button type="button" class="btn btn-success"
+							ng-click="updateBranchName(branch)">Save new Branch Name</button>
+          				<br /><br />
+          				<div class="form-group">
+          					<label for="branch-address" class="col-form-label">Enter new branch address:</label>
+          					<input type="text"
+          						id="branch-address"
+								maxlength="45" ng-model="branch.branchAddress"
+								value="branch.branchAddress">
+          				</div>
+          				<button type="button" class="btn btn-success"
+							ng-click="updateBranchAddress(branch)">Save new Branch Address</button>
+          				<br /><br />
+          				<div class="form-group">
+          					<label for="book-name" class="col-form-label">Select book to modify</label>
+	    					<select class="form-control" id="book-name" ng-model="bookToModify" 
+	    						ng-change="selectBookToModifyCopiesOf(bookToModify, branch)"
+								data-ng-options="b as b.title for b in books">
+								<option value="">Select option</option>
+							</select>
+							<br />
+							<label ng-model="libraryCopies">Current copies: {{libraryCopies.noOfCopies}}</label>
+							<br />
+							<label for="book-copies">Enter new copies</label>
+							<input type="number" id="book-copies" 
+								ng-model="newTotal" min="0" required>
+          				</div>
+          				<button type="button" class="btn btn-success"
+							ng-click="updateBookCopiesInBranch(branch, newTotal)">Add/Modify num of books</button>
+          				<br /><br />
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBranch()">Close</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

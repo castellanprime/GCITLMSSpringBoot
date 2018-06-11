@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,7 +57,6 @@ public class LibrarianService {
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/librarian/branches/{branchId}", 
 		method = RequestMethod.PATCH, 
-		consumes = "application/json",
 		produces = "application/json")
 	public LibraryBranch editBranch(@PathVariable int branchId, 
 			@RequestParam(value="name", required=false) String branchName,
@@ -70,7 +70,7 @@ public class LibrarianService {
 				lbdao.updateBranchName(libraryBranch, branchName);
 			}
 			if (branchAddress != null && branchAddress.trim().length() != 0) {
-				lbdao.updateBranchName(libraryBranch, branchAddress);
+				lbdao.updateBranchAddress(libraryBranch, branchAddress);
 			}
 			branches = lbdao.getAllBranches();
 			branch = this.getBranchByID(branches, branchId);
@@ -82,20 +82,32 @@ public class LibrarianService {
 	
 	@Transactional
 	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/librarian/branches/{branchId}/books/{bookId}", 
+	@RequestMapping(value = "/librarian/branches/{branchId}/books/{bookId}/copies", 
 		method = RequestMethod.PATCH, 
-		consumes = "application/json",
 		produces = "application/json")
-	public LibraryBookCopies updateCopiesOfBookInBranch(@PathVariable int branchId, 
-			@PathVariable int bookId, 
-			@RequestParam int copies) throws SQLException{
+	public LibraryBookCopies updateCopiesOfBookInBranch(@RequestBody LibraryBookCopies lbc) throws SQLException{
 		LibraryBookCopies lbco = null;
 		try {
-			List<LibraryBookCopies> libraryBookBranches = lbcdao.getAllCopiesOfBookInBranch(branchId, bookId);
-			LibraryBookCopies lbc = libraryBookBranches.get(0);
-			lbc.setNoOfCopies(copies);
+			//List<LibraryBookCopies> libraryBookBranches = lbcdao.getAllCopiesOfBookInBranch(branchId, bookId);
+			//LibraryBookCopies lbc = libraryBookBranches.get(0);
+			//lbc.setNoOfCopies(copies);
 			lbcdao.updateBookCopies(lbc);
-			lbco = lbcdao.getAllCopiesOfBookInBranch(branchId, bookId).get(0);
+			lbco = lbcdao.getAllCopiesOfBookInBranch(lbc.getBranchId(), lbc.getBookId()).get(0);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return lbco;
+	}
+	
+	@Transactional
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = "/librarian/branches/{branchId}/books", 
+			method = RequestMethod.POST, 
+			produces = "application/json")
+	public LibraryBookCopies addNewBookToBranch(@RequestBody LibraryBookCopies lbc) throws SQLException{
+		LibraryBookCopies lbco = new LibraryBookCopies();
+		try {
+			lbcdao.saveBranchBook(lbc);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -125,35 +137,19 @@ public class LibrarianService {
 		LibraryBookCopies lbco = null;
 		try {
 			List<LibraryBookCopies> libraryBookBranches = lbcdao.getAllCopiesOfBookInBranch(branchId, bookId);
-			lbco = libraryBookBranches.get(0);
+			if (libraryBookBranches == null || libraryBookBranches.size() == 0) {
+				lbco = new LibraryBookCopies();
+				lbco.setNoOfCopies(0);
+			} else {
+				lbco = libraryBookBranches.get(0);
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return lbco;
 	}
 	
-	@Transactional
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/librarian/branches/{branchId}/books", 
-			method = RequestMethod.POST, 
-			consumes = "application/json",
-			produces = "application/json")
-	public LibraryBookCopies addNewBookToBranch(@PathVariable int branchId, 
-			@RequestParam int bookId, 
-			@RequestParam int copies) throws SQLException{
-		LibraryBookCopies lbc = new LibraryBookCopies();
-		try {
-			lbc.setBranchId(branchId);
-			lbc.setBookId(bookId);
-			lbc.setNoOfCopies(copies);
-			lbcdao.saveBranchBook(lbc);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return lbc;
-	}
-	
-	
+	/**
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/librarian/branches/{branchId}/books", 
 			method = RequestMethod.GET, 
@@ -183,6 +179,6 @@ public class LibrarianService {
 		}
 		return books;
 	}
-	
+	**/
 	
 }

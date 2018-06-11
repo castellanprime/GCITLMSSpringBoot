@@ -17,5 +17,6 @@ lmsApp.constant("lmsConstants",{
 	SPECIFIC_BOOK_LOAN_ADMIN: "http://localhost:8080/lmsspringboot/admin/loans/",
 	ALL_BORROWERS: "http://localhost:8080/lmsspringboot/borrowers",
 	SPECIFIC_BORROWER: "http://localhost:8080/lmsspringboot/borrowers/",
-	LIBRARIAN: "http://localhost:8080/lmsspringboot/librarian"
+	BRANCH_LIBRARIAN: "http://localhost:8080/lmsspringboot/librarian/branches",
+	SPECIFIC_BRANCH_LIBRARIAN: "http://localhost:8080/lmsspringboot/librarian/branches/"
 });
