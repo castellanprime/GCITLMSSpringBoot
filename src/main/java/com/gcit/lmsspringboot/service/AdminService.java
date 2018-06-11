@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.gcit.lmsspringboot.entity.Genre;
+import com.gcit.lmsspringboot.entity.LibraryBookCopies;
 import com.gcit.lmsspringboot.dao.AuthorDAO;
 import com.gcit.lmsspringboot.dao.BookDAO;
 import com.gcit.lmsspringboot.dao.BookLoanDAO;
 import com.gcit.lmsspringboot.dao.BorrowerDAO;
 import com.gcit.lmsspringboot.dao.GenreDAO;
+import com.gcit.lmsspringboot.dao.LibraryBookCopiesDAO;
 import com.gcit.lmsspringboot.dao.LibraryBranchDAO;
 import com.gcit.lmsspringboot.dao.PublisherDAO;
 import com.gcit.lmsspringboot.entity.Author;
@@ -61,6 +63,9 @@ public class AdminService {
 	
 	@Autowired
 	BorrowerDAO borrowerDao;
+	
+	@Autowired
+	LibraryBookCopiesDAO lbcdao;
 	
 	private Author getAuthor(List<Author> authors, int authorId) {
 		for (Author author: authors) {
@@ -308,6 +313,18 @@ public class AdminService {
 		List<LibraryBranch> branches = new ArrayList<>();
 		try {
 			branches = lbdao.getAllBranches();
+			for (LibraryBranch b: branches) {
+				List<Book> books = new ArrayList<>();
+				List<LibraryBookCopies> allBooks = lbcdao.getAllBooksForABranch(b.getBranchId());
+				List<Book> allBooksInDatabase = bookDao.readAllBooks();
+				for (LibraryBookCopies lbc: allBooks) {
+					if (lbc.getNoOfCopies() > 0) {
+						Book book = this.getBookById(allBooksInDatabase, lbc.getBookId());
+						books.add(book);
+					}
+				}
+				b.setBooks(books);
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -51,6 +51,16 @@ public class BookLoanDAO extends BaseDAO<BookLoan> implements ResultSetExtractor
 				new Object[] { branchId }, this);
 	}
 	
+	public List<BookLoan> getAllBookLoansForBorrower(int cardNo) throws ClassNotFoundException, SQLException{
+		return mySqlTemplate.query("select * from tbl_book_loans where cardNo = ?", 
+				new Object[] { cardNo }, this);
+	}
+	
+	public List<BookLoan> getCurrentLoansForBorrower(int cardNo) throws ClassNotFoundException, SQLException{
+		return mySqlTemplate.query("select * from tbl_book_loans where cardNo = ? and dateIn is NULL", 
+				new Object[] { cardNo },this);
+	}
+	
 	public List<BookLoan> getAllBookLoans()  throws ClassNotFoundException, SQLException{
 		return mySqlTemplate.query("select * from tbl_book_loans", this);
 	}

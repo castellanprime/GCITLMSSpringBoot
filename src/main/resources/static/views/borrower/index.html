@@ -1,0 +1,206 @@
+<!-- Borrower view/genres -->
+<div class="container-fluid text-left" style="background: white" ng-controller="borrowerController">
+	<h1 class="cover-heading">Authors</h1>
+	<button type="button" class="btn btn-primary btn-lg"
+		data-toggle="modal" data-target="#addBorrowerModal">Add a Borrower</button>
+	<table class="table table-hover">
+		<thead class="thead-dark">
+			<tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Borrower Name</th>
+		      <th scope="col">Borrower Address</th>
+		      <th scope="col">Borrower Phone</th>
+		      <th scope="col">Books borrowed</th>
+		      <th scope="col">Books currently borrowed</th>
+		      <th scope="col">Check out a book</th>
+		      <th scope="col">Return a book</th>
+		      <th scope="col">Edit</th>
+		      <th scope="col">Delete</th>
+		    </tr>
+		</thead>
+		<tbody class="text-dark">
+			<tr ng-repeat="bor in borrowers">
+				<td>{{$index+1}}</td>
+				<td>{{bor.name}}</td>
+				<td>{{bor.address}}</td>
+				<td>{{bor.phone}}</td>
+				<td>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item" ng-repeat="bkl in bor.allBookLoans">
+							{{bkl.book.title}}
+						</li>
+					</ul>
+				</td>
+				<td>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item" ng-repeat="cbkl in bor.currentBookLoans">
+							{{cbkl.book.title}}
+						</li>
+					</ul>
+				</td>
+				<td><button type="button" class="btn btn-primary"
+						data-toggle="modal" data-target="#checkOutReturnBookModal"
+						ng-click="checkOutReturnBookModal(bor)">
+						<i class="fa fa-cloud-download" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-primary"
+						data-toggle="modal" data-target="#checkOutReturnBookModal"
+						ng-click="checkOutReturnBookModal(bor)">
+						<i class="fa fa fa-cloud-upload" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-info"
+						data-toggle="modal" data-target="#editBorrowerModal"
+						ng-click="editBorrowerModal(bor)">
+						<i class="fa fa-pencil" aria-hidden="true"></i></button></td>
+				<td><button type="button" class="btn btn-danger"
+						ng-click="deleteBorrower(bor.cardNo)">
+						<i class="fa fa-remove"></i></button></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade text-dark" id="editBorrowerModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit Genre</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+        				<label for="borrower-name" class="col-form-label">Enter new borrower name:</label>
+        				<input type="text"
+        					id="borrower-name"
+							maxlength="45" ng-model="borrower.name"
+							value="borrower.name">
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBorrowerName(borrower)">Save new Borrower Name</button>
+					<br /><br />
+					<div class="form-group">
+        				<label for="borrower-address" class="col-form-label">Enter new borrower address:</label>
+        				<input type="text"
+        					id="borrower-address"
+							maxlength="45" ng-model="borrower.address"
+							value="borrower.address">
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBorrowerAddress(borrower)">Save new Borrower Address</button>
+					<br /><br />
+					<div class="form-group">
+        				<label for="borrower-phone" class="col-form-label">Enter new borrower phone:</label>
+        				<input type="text"
+        					id="borrower-phone"
+							maxlength="45" ng-model="borrower.phone"
+							value="borrower.phone">
+         			</div>
+					<button type="button" class="btn btn-success"
+						ng-click="updateBorrowerPhone(borrower)">Save new Borrower Phone</button>
+					<br /><br />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBorrower()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>	
+	
+	<div class="modal fade text-dark" id="addBorrowerModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">Add Genre</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+          				<div class="form-group">
+          					<label for="new-borrower-name" class="col-form-label">Enter new borrower name:</label>
+          					<input type="text"
+          						id="new-borrower-name"
+								maxlength="45" ng-model="borrowerName" 
+								required>
+          				</div>
+          				<div class="form-group">
+          					<label for=new-borrower-address" class="col-form-label">Enter new borrower address:</label>
+          					<input type="text"
+          						id="new-borrower-address"
+								maxlength="45" ng-model="borrowerAddress"
+								required">
+          				</div>
+          				<div class="form-group">
+          					<label for=new-borrower-phone" class="col-form-label">Enter new borrower phone:</label>
+          					<input type="text"
+          						id="new-borrower-phone"
+								maxlength="45" ng-model="borrowerPhone"
+								required">
+          				</div>
+          			</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success"
+						ng-click="createBorrower(borrowerName, borrowerAddress, borrowerPhone)" 
+						data-dismiss="modal">Create</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+	
+	<div class="modal fade text-dark" id="checkOutReturnBookModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleAddModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleAddModalLabel">CheckOut/Return a book</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+      				<div class="form-group">
+      					<label for="checkout-branch-name" class="col-form-label">Select branch to borrow from:</label>
+    					<select class="form-control" id="checkout-branch-name" ng-model="branchToBorrowFrom" 
+    						ng-change="selectBranchToCheckOutFrom(branchToBorrowFrom, borrowerToEdit)"
+							data-ng-options="b as b.branchName for b in branches">
+							<option value="">Select options</option>
+						</select>
+      					<label for="checkout-book-name" class="col-form-label">Select books to borrow:</label>
+    					<select class="form-control" id="checkout-book-name" ng-model="bookToBorrow" 
+    						ng-change="selectBookToCheckOut(bookToBorrow, borrowerToEdit)"
+							data-ng-options="b as b.title for b in branchToBorrowFrom.books" multiple>
+							<option value="">Select options</option>
+						</select>
+        			</div>
+        			<button type="button" class="btn btn-success"
+						ng-click="checkOutBook(borrowerToEdit)">Check Out Book(s)</button>
+					<br /><br />
+					<div class="form-group">
+      					<label for="return-book-name" class="col-form-label">Select books to return:</label>
+    					<select class="form-control" id="return-book-name" ng-model="bookToReturn" 
+    						ng-change="selectBookToReturn(bookToReturn, borrowerToEdit)"
+							data-ng-options="b as b.title for b in borrowerToEdit.currentBookLoans" multiple>
+							<option value="">Select options</option>
+						</select>
+        			</div>
+        			<button type="button" class="btn btn-success"
+						ng-click="returnBook(borrowerToEdit)">Return Book(s)</button>
+					<br /><br />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" ng-click="resetBorrower()">Close</button>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

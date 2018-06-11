@@ -160,17 +160,17 @@ public class LibrarianService {
 			consumes = "application/json",
 			produces = "application/json")
 	public List<Book> getAllBooksInBranch(@PathVariable int branchId,
-			@RequestParam(value="available", required=false) boolean available) throws SQLException {
+			@RequestParam Boolean available) throws SQLException {
 		List<Book> books = new ArrayList<>();
 		try {
 			List<LibraryBookCopies> allBooks = lbcdao.getAllBooksForABranch(branchId);
 			List<Book> allBooksInDatabase = bdao.readAllBooks();
-			if (available == false) {
+			if (available != null && available == false) {
 				for (LibraryBookCopies lbc: allBooks) {
 					Book book = this.getBookById(allBooksInDatabase, lbc.getBookId());
 					books.add(book);
 				}
-			} else {
+			} else if (available != null && available == true) {
 				for (LibraryBookCopies lbc: allBooks) {
 					if (lbc.getNoOfCopies() > 0) {
 						Book book = this.getBookById(allBooksInDatabase, lbc.getBookId());

@@ -3,7 +3,7 @@
  */
 package com.gcit.lmsspringboot.entity;
 
-
+import java.util.List;
 
 /**
  * @author iratusmachina
@@ -14,6 +14,15 @@ public class LibraryBranch {
 	private String branchName;
 	private String branchAddress;
 	private int branchId;
+	private List<Book> books;
+
+	public List<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
 
 	/**
 	 * @return the branchId

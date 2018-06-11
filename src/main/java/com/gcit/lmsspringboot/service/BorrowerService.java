@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,10 +19,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.gcit.lmsspringboot.dao.BookDAO;
 import com.gcit.lmsspringboot.dao.BookLoanDAO;
 import com.gcit.lmsspringboot.dao.BorrowerDAO;
+import com.gcit.lmsspringboot.entity.Book;
 import com.gcit.lmsspringboot.entity.BookLoan;
+import com.gcit.lmsspringboot.entity.BookLoanDTO;
+import com.gcit.lmsspringboot.entity.BookLoanInputDTO;
 import com.gcit.lmsspringboot.entity.Borrower;
+import com.gcit.lmsspringboot.entity.LibraryBranch;
 
 @RestController
 @RequestMapping("/lmsspringboot/")
@@ -33,10 +39,22 @@ public class BorrowerService {
 	@Autowired
 	BookLoanDAO bldao;
 	
+	@Autowired
+	BookDAO bookDao;
+	
 	private Borrower getBorrowerById(List<Borrower> borrowers, int cardNo) {
 		for (Borrower borrower: borrowers) {
 			if (borrower.getCardNo() == cardNo) {
 				return borrower;
+			}
+		}
+		return null;
+	}
+	
+	private Book getBookById(List<Book> books, int bookId) {
+		for (Book book: books) {
+			if (book.getBookId() == bookId) {
+				return book;
 			}
 		}
 		return null;
@@ -48,14 +66,14 @@ public class BorrowerService {
 		method = RequestMethod.POST, 
 		consumes = "application/json",
 		produces = "application/json")
-	public BookLoan checkOutBook(@RequestParam int branchId, 
-			@RequestParam int bookId, @PathVariable int cardNo) 
+	public BookLoan checkOutBook(@RequestBody BookLoanInputDTO bookLoanInputDto, 
+			@PathVariable int cardNo) 
 			throws SQLException{
 		BookLoan bookLoanToReturn = null;
 		try {
 			BookLoan bookLoan = new BookLoan();
-			bookLoan.setBookId(bookId);
-			bookLoan.setBranchId(branchId);
+			bookLoan.setBookId(bookLoanInputDto.getBookId());
+			bookLoan.setBranchId(bookLoanInputDto.getBranchId());
 			bookLoan.setCardNo(cardNo);
 			bldao.addLoan(bookLoan);
 			bookLoanToReturn = bldao.getCurrentLoans(bookLoan).get(0);
@@ -99,18 +117,13 @@ public class BorrowerService {
 		method = RequestMethod.POST, 
 		consumes = "application/json",
 		produces = "application/json")
-	public ResponseEntity<Borrower> addBorrower(@RequestParam String name, 
-			@RequestParam String address, 
-			@RequestParam String phone,
+	public ResponseEntity<Borrower> addBorrower(@RequestBody Borrower sentBorrower,
 			UriComponentsBuilder ucb) 
 			throws SQLException{
 		Borrower borrowerToReturn = null;
+		int borrowerId = 0;
 		try {
-			Borrower borrower= new Borrower();
-			borrower.setName(name);
-			borrower.setAddress(address);
-			borrower.setPhone(phone);
-			int borrowerId = bdao.addBorrowerWithID(borrower);
+			borrowerId = bdao.addBorrowerWithID(sentBorrower);
 			List<Borrower> borrowers = bdao.getAllBorrowers();
 			borrowerToReturn = this.getBorrowerById(borrowers, borrowerId);
 		} catch (ClassNotFoundException e) {
@@ -119,7 +132,7 @@ public class BorrowerService {
 		HttpHeaders headers = new HttpHeaders();
 		URI locationUri =
 				ucb.path("/borrowers/")
-				.path(String.valueOf(borrowerToReturn.getCardNo()))
+				.path(String.valueOf(borrowerId))
 				.build()
 				.toUri();
 		headers.setLocation(locationUri);
@@ -145,6 +158,35 @@ public class BorrowerService {
 		List<Borrower> borrowers = new ArrayList<>();
 		try {
 			borrowers = bdao.getAllBorrowers();
+			for (Borrower b: borrowers) {
+				List<BookLoan> bookLoans = bldao.getAllBookLoansForBorrower(b.getCardNo());
+				List<BookLoanDTO> bookLoanDTOs = new ArrayList<>();
+				for (BookLoan bookLoan: bookLoans) {
+					BookLoanDTO bokL = new BookLoanDTO();
+					bokL.setBook(this.getBookById(bookDao.readAllBooks(), bookLoan.getBookId()));
+					bokL.setBorrower(null);
+					bokL.setBranch(null);
+					bokL.setDateIn(null);
+					bokL.setDateOut(null);
+					bokL.setDueDate(null);
+					bookLoanDTOs.add(bokL);
+				}
+				b.setAllBookLoans(bookLoanDTOs);
+				
+				List<BookLoan> curbookLoans = bldao.getCurrentLoansForBorrower(b.getCardNo());
+				List<BookLoanDTO> curbookLoanDTOs = new ArrayList<>();
+				for (BookLoan bookLoan: curbookLoans) {
+					BookLoanDTO bokL = new BookLoanDTO();
+					bokL.setBook(this.getBookById(bookDao.readAllBooks(), bookLoan.getBookId()));
+					bokL.setBorrower(null);
+					bokL.setBranch(null);
+					bokL.setDateIn(null);
+					bokL.setDateOut(null);
+					bokL.setDueDate(null);
+					curbookLoanDTOs.add(bokL);
+				}
+				b.setCurrentBookLoans(curbookLoanDTOs);
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -171,7 +213,6 @@ public class BorrowerService {
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = "/borrowers/{cardNo}", 
 			method = RequestMethod.PATCH,
-			consumes="application/json",
 			produces = "application/json")
 	public Borrower editBorrower(@PathVariable int cardNo, 
 			@RequestParam (value="name", required=false) String name, 

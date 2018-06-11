@@ -3,7 +3,7 @@
  */
 package com.gcit.lmsspringboot.entity;
 
-
+import java.util.List;
 
 /**
  * @author iratusmachina
@@ -13,7 +13,22 @@ package com.gcit.lmsspringboot.entity;
 public class Borrower {
 	private int cardNo;
 	private String name, address, phone;
+	private List<BookLoanDTO> allBookLoans;
+	private List<BookLoanDTO> currentBookLoans;
 	
+	public List<BookLoanDTO> getAllBookLoans() {
+		return allBookLoans;
+	}
+	public void setAllBookLoans(List<BookLoanDTO> allBookLoans) {
+		this.allBookLoans = allBookLoans;
+	}
+	public List<BookLoanDTO> getCurrentBookLoans() {
+		return currentBookLoans;
+	}
+	public void setCurrentBookLoans(List<BookLoanDTO> currentBookLoans) {
+		this.currentBookLoans = currentBookLoans;
+	}
+
 	public int getCardNo() {
 		return cardNo;
 	}
